@@ -25,12 +25,12 @@ enum InterviewRound {
 struct Candidate {
     name: String,
     experience: Experience,
-    /*
-    * Slots can only be hourly, like {1->9, 2->930, 3->10, 4->1030} Odd Slots-> Hour time, Even Slots->30 mins past the hour
-    * So, 1->9 means 9-10, 2->930 means 9:30-10:30, 3->10 means 10-11, 4->1030 means 10:30-11:30
-    * Slot nth = 8:30 + (n/2) *60 mins
-    * if the avail[1] = true, X is available for the slot
-    */
+    ///
+    /// Slots can only be hourly, like {1->9, 2->930, 3->10, 4->1030} Odd Slots-> Hour time, Even Slots->30 mins past the hour
+    /// So, 1->9 means 9-10, 2->930 means 9:30-10:30, 3->10 means 10-11, 4->1030 means 10:30-11:30
+    /// Slot nth = 8:30 + (n/2) *60 mins
+    /// if the avail[1] = true, X is available for the slot
+    ///
     availability: [bool; 13],
     schedule: Vec<u8>,
 }
