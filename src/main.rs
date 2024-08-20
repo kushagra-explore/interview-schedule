@@ -218,6 +218,12 @@ impl Candidate {
     
 }
 
+/// Used for grouping interviews of a candidate together, This makes output CSV more readable
+fn sort_interview_details(interview_details: &mut Vec<InterviewDetail>) {
+    interview_details.sort_by_key(|i: &InterviewDetail| {
+        i.candidate.clone()
+    });
+}
 
 
 fn main() {
@@ -306,6 +312,7 @@ fn main() {
                     interviewer.schedule.push(slot as u8);
                     interviewer.interviews_count -= 1;
                     interviewer.availability[slot as usize] = false;
+                    candidate.availability[slot as usize] = false;
                     interview_logistics.interviewer_candidate_map.entry(interviewer.name.clone())
                     .or_insert(HashSet::new()).insert(candidate.name.clone());
                     interview_details.push(InterviewDetail::new(interviewer.name.clone(), candidate.name.clone(), slot as u8));
@@ -330,6 +337,8 @@ fn main() {
        
     
     }
+
+    sort_interview_details(&mut interview_details);
 
     for interview_detail in interview_details.iter()  {
         println!("{}", interview_detail);
