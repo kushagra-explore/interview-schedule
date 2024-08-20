@@ -15,11 +15,20 @@ enum Experience {
     Senior = 2
 }
 
-#[derive(Debug, Eq, PartialEq, PartialOrd, Ord, Clone, Copy)]
+#[derive(Debug, Eq, PartialEq, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize)]
 enum InterviewRound {
+    #[serde(rename = "R1")]
     R1 = 0,
+    #[serde(rename = "R2")]
     R2 = 1,
+    #[serde(rename = "R3")]
     R3 = 2
+}
+
+impl std::fmt::Display for InterviewRound {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }
 #[derive(Debug, Eq, PartialEq, Clone)]
 struct Candidate {
@@ -55,16 +64,18 @@ struct InterviewDetail {
     interviewer: String,
     candidate: String,
     slot: u8,
-    slot_human_friendly: String
+    slot_human_friendly: String,
+    round: InterviewRound
 }
 
 impl InterviewDetail {
-    fn new(interviewer: String, candidate: String, slot: u8) -> InterviewDetail {
+    fn new(interviewer: String, candidate: String, slot: u8, round: InterviewRound) -> InterviewDetail {
         InterviewDetail {
             interviewer,
             candidate,
             slot,
-            slot_human_friendly: format!("{}:{}",  convert_to_24_hour_format(8 + (slot as f32/2.0).ceil() as u8), 30 * (1- slot % 2))
+            slot_human_friendly: format!("{}:{}",  convert_to_24_hour_format(8 + (slot as f32/2.0).ceil() as u8), 30 * (1- slot % 2)),
+            round: round
         }
     }
 }
@@ -72,8 +83,8 @@ impl InterviewDetail {
 impl Display for InterviewDetail {
 
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} {} {} {} {} {}", "Candidate :".red(), self.candidate.yellow(), "interviewing with".blue(), self.interviewer.yellow(),
-        "at slot".green(), self.slot.to_string().yellow())
+        write!(f, "{} {} {} {} {} {} {} {} {} {}", "Candidate :".red(), self.candidate.yellow(), "interviewing with".blue(), self.interviewer.yellow(),
+        "at slot".green(), self.slot.to_string().yellow(), "for round".red(), self.round, "at time".green(), self.slot_human_friendly.yellow())
     }
 }
 
@@ -315,7 +326,13 @@ fn main() {
                     candidate.availability[slot as usize] = false;
                     interview_logistics.interviewer_candidate_map.entry(interviewer.name.clone())
                     .or_insert(HashSet::new()).insert(candidate.name.clone());
-                    interview_details.push(InterviewDetail::new(interviewer.name.clone(), candidate.name.clone(), slot as u8));
+                    interview_details.push(InterviewDetail::new(interviewer.name.clone(), candidate.name.clone(), slot as u8,
+                    match candidate.schedule.len() {
+                        1 => InterviewRound::R1,
+                        2 => InterviewRound::R2,
+                        3 => InterviewRound::R3,
+                        _ => InterviewRound::R1
+                    }));
                     println!("{}",
                         format!("---------Interviewer {} is allocated for candidate {} at slot {}", interviewer.name, candidate.name, slot).blue());
                     if interviewer.interviews_count > 0 {
