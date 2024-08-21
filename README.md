@@ -77,5 +77,5 @@ If someone is avaialable for full day provide *"all"* as in the slot available c
 #### Identified Bugs
 1. ~~Return round name in the result~~ -- fixed
 2. ~~Slot mark as true, once assigned so that same slot doesnt come~~ -- fixed
-3. Fix time formatting in output (Current: 9:0, should be 09:00)
+3. ~~Fix time formatting in output (Current: 9:0, should be 09:00)~~ -- fixed
 4. Alow >SSE level in interviewer (For now as a workaround all > SSE can be put as SSE if they need to conduct R1/R2)

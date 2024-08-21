@@ -74,7 +74,7 @@ impl InterviewDetail {
             interviewer,
             candidate,
             slot,
-            slot_human_friendly: format!("{}:{}",  convert_to_24_hour_format(8 + (slot as f32/2.0).ceil() as u8), 30 * (1- slot % 2)),
+            slot_human_friendly: format!("{hour:0>2}:{min:0>2}",  hour = convert_to_24_hour_format(8 + (slot as f32/2.0).ceil() as u8), min=  30 * (1- slot % 2)),
             round: round
         }
     }
