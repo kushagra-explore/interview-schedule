@@ -60,19 +60,19 @@ If someone is avaialable for full day provide *"all"* as in the slot available c
 #### Interview Details Output 
 | Interviewer | Candidate | Slot | Slot_human_friendly |
 |-------------|-----------|------|---------------------|
-| I5          | C1        | 3    | 10:0                |
-| I3          | C10       | 1    | 9:0                 |
-| I4          | C2        | 1    | 9:0                 |
-| I5          | C3        | 2    | 9:30                |
+| I5          | C1        | 3    | 10:00               |
+| I3          | C10       | 1    | 09:00               |
+| I4          | C2        | 1    | 09:00               |
+| I5          | C3        | 2    | 09:30               |
 | I4          | C4        | 4    | 10:30               |
-| I4          | C5        | 2    | 9:30                |
-| I1          | C6        | 1    | 9:0                 |
+| I4          | C5        | 2    | 09:30               |
+| I1          | C6        | 1    | 09:00               |
 | I3          | C6        | 4    | 10:30               |
-| I2          | C7        | 1    | 9:0                 |
-| I1          | C7        | 5    | 11:0                |
-| I2          | C8        | 3    | 10:0                |
+| I2          | C7        | 1    | 09:00               |
+| I1          | C7        | 5    | 11:00               |
+| I2          | C8        | 3    | 10:00               |
 | I3          | C8        | 6    | 11:30               |
-| I1          | C9        | 2    | 9:30                |
+| I1          | C9        | 2    | 09:30               |
 
 #### Identified Bugs
 1. ~~Return round name in the result~~ -- fixed
