@@ -34,14 +34,16 @@ pub fn get_csv_data_candidate(interview_logistics: &mut InterviewLogistics) -> R
     let file = File::open(file_path)?;
     println!("Reading from file done");
     let mut rdr = csv::Reader::from_reader(file);
+    let mut serial_num = 0;
     for result in rdr.records() {
         let record = result?;
         let name = String::from(&record[3]);
         let experience = convert_to_exp(&record[2]);
         let slot = convert_to_slots(&record[5]);
+        serial_num = serial_num + 1;
         match experience {
             Ok(exp) => {
-                interview_logistics.add_candidate(Candidate::new(name, exp, slot))
+                interview_logistics.add_candidate(Candidate::new(serial_num, name, exp, slot))
             },
             Err(_err) => {
                   println!("Invalid exp {} for record: {}", &record[0], &record[2]);
