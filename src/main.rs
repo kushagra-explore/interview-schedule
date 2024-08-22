@@ -338,6 +338,17 @@ fn main() {
                     interviewer.interviews_count -= 1;
                     interviewer.availability[slot as usize] = false;
                     candidate.availability[slot as usize] = false;
+                    if slot < 12 {
+                        interviewer.availability[slot as usize + 1] = false;
+                        candidate.availability[slot as usize + 1] = false;
+                    }
+
+                    //Want to give interviewer and candidates some buffer time between interviews
+                    if slot < 11 {
+                        interviewer.availability[slot as usize + 2] = false;
+                        candidate.availability[slot as usize + 2] = false;
+                    } 
+                    
                     interview_logistics.interviewer_candidate_map.entry(interviewer.name.clone())
                     .or_insert(HashSet::new()).insert(candidate.name.clone());
                     interview_details.entry(candidate.serial_num).or_insert(CandidateInterviewDetails{candidate: candidate.clone(), 
