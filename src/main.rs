@@ -1,5 +1,5 @@
 
-use std::{cmp::Reverse, collections::{HashMap, HashSet, VecDeque}, fmt::{self, Display}};
+use std::{cmp::Reverse, collections::{BTreeMap, HashMap, HashSet, VecDeque}, fmt::{self, Display}};
 use serde::{Serialize, Deserialize};
 use colored::*;
 use crate::csv_reader::{get_csv_data_candidate, get_csv_data_interview};
@@ -8,7 +8,7 @@ use crate::csv_writer::write_interview_details_csv;
 mod csv_reader;
 mod csv_writer;
 
-#[derive(Debug, Eq, PartialEq, PartialOrd, Ord, Clone, Copy)]
+#[derive(Debug, Eq, PartialEq, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize)]
 enum Experience {
     SE1 = 0,
     SE2 = 1,
@@ -30,8 +30,9 @@ impl std::fmt::Display for InterviewRound {
         write!(f, "{:?}", self)
     }
 }
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize)]
 struct Candidate {
+    serial_num: u8,
     name: String,
     experience: Experience,
     ///
@@ -58,21 +59,24 @@ struct Interviewer {
     schedule: Vec<u8>,
     interviews_count: u8,
 }
+#[derive(Debug, Serialize, Deserialize, Clone)]
+struct CandidateInterviewDetails {
+    candidate: Candidate,
+    interview_details: Vec<InterviewDetail>,
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 struct InterviewDetail {
     interviewer: String,
-    candidate: String,
     slot: u8,
     slot_human_friendly: String,
     round: InterviewRound
 }
 
 impl InterviewDetail {
-    fn new(interviewer: String, candidate: String, slot: u8, round: InterviewRound) -> InterviewDetail {
+    fn new(interviewer: String, slot: u8, round: InterviewRound) -> InterviewDetail {
         InterviewDetail {
             interviewer,
-            candidate,
             slot,
             slot_human_friendly: format!("{hour:0>2}:{min:0>2}",  hour = convert_to_24_hour_format(8 + (slot as f32/2.0).ceil() as u8), min=  30 * (1- slot % 2)),
             round: round
@@ -83,8 +87,15 @@ impl InterviewDetail {
 impl Display for InterviewDetail {
 
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} {} {} {} {} {} {} {} {} {}", "Candidate :".red(), self.candidate.yellow(), "interviewing with".blue(), self.interviewer.yellow(),
+        write!(f, "{} {} {} {} {} {} {} {}", "interviewing with".blue(), self.interviewer.yellow(),
         "at slot".green(), self.slot.to_string().yellow(), "for round".red(), self.round, "at time".green(), self.slot_human_friendly.yellow())
+    }
+}
+
+impl Display for CandidateInterviewDetails {
+
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{} : {:?}", self.candidate.name.yellow(), self.interview_details)
     }
 }
 
@@ -200,8 +211,9 @@ impl Interviewer {
 }
 
 impl Candidate {
-    fn new(name: String, experience: Experience, availability: [bool; 13]) -> Candidate {
+    fn new(serial_num: u8, name: String, experience: Experience, availability: [bool; 13]) -> Candidate {
         Candidate {
+            serial_num: serial_num,
             name,
             experience,
             availability,
@@ -209,8 +221,9 @@ impl Candidate {
         }
     }
     #[allow(dead_code)]
-    fn new_with_full_availability(name: String, experience: Experience) -> Candidate {
+    fn new_with_full_availability(serial_num: u8, name: String, experience: Experience) -> Candidate {
         Candidate {
+            serial_num: serial_num,
             name,
             experience,
             availability : [true; 13],
@@ -230,11 +243,11 @@ impl Candidate {
 }
 
 /// Used for grouping interviews of a candidate together, This makes output CSV more readable
-fn sort_interview_details(interview_details: &mut Vec<InterviewDetail>) {
-    interview_details.sort_by_key(|i: &InterviewDetail| {
-        i.candidate.clone()
-    });
-}
+// fn sort_interview_details(interview_details: &mut Vec<InterviewDetail>) {
+//     interview_details.sort_by_key(|i: &InterviewDetail| {
+//         i.candidate.clone()
+//     });
+// }
 
 
 fn main() {
@@ -260,7 +273,8 @@ fn main() {
     interview_logistics.sort_interviewers();
     interview_logistics.sort_candidates();
 
-    let mut interview_details: Vec<InterviewDetail> = Vec::new();
+    // Map for storing the interview details for each candidate, serial number being the key
+    let mut interview_details : BTreeMap<u8, CandidateInterviewDetails> = BTreeMap::new(); 
 
     loop {
 
@@ -326,7 +340,9 @@ fn main() {
                     candidate.availability[slot as usize] = false;
                     interview_logistics.interviewer_candidate_map.entry(interviewer.name.clone())
                     .or_insert(HashSet::new()).insert(candidate.name.clone());
-                    interview_details.push(InterviewDetail::new(interviewer.name.clone(), candidate.name.clone(), slot as u8,
+                    interview_details.entry(candidate.serial_num).or_insert(CandidateInterviewDetails{candidate: candidate.clone(), 
+                        interview_details: Vec::new()});
+                    interview_details.get_mut(&candidate.serial_num).unwrap().interview_details.push(InterviewDetail::new(interviewer.name.clone(), slot as u8,
                     match candidate.schedule.len() {
                         1 => InterviewRound::R1,
                         2 => InterviewRound::R2,
@@ -355,13 +371,13 @@ fn main() {
     
     }
 
-    sort_interview_details(&mut interview_details);
+    //sort_interview_details(&mut interview_details);
 
     for interview_detail in interview_details.iter()  {
-        println!("{}", interview_detail);
+        println!("{} {}", interview_detail.0, interview_detail.1);
     }
 
-    write_interview_details_csv(interview_details).unwrap();
+    write_interview_details_csv(interview_details.into_values().collect()).unwrap();
 
 }
 
