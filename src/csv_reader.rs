@@ -56,7 +56,7 @@ pub fn get_csv_data_candidate(interview_logistics: &mut InterviewLogistics) -> R
 pub fn get_csv_data_interview(interview_logistics: &mut InterviewLogistics) -> Result<(), Box<dyn Error>> {
     let file_path = get_arg(INTERVIEWER_ARG)?;
     println!("Reading from file: {:?}", file_path);
-    let file = File::open(r#"C:\Users\kvarshney\repos\scheduling_interview\src\SamplePanelIn.csv"#)?;
+    let file = File::open(file_path)?;
     println!("Reading from file done");
     let mut rdr = csv::Reader::from_reader(file);
     for result in rdr.records() {
