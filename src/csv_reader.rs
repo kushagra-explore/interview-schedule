@@ -14,14 +14,14 @@ const INTERVIEWER_ARG : usize = 2;
 #[cfg(test)]
 fn get_arg(pos: usize) -> Result<OsString, Box<dyn Error>> {
     let mut path = std::env::current_dir()?;
-    let mut can_path = path.clone();
-    can_path.push(r#"src\SamplePanelCan.csv"#);
-    path.push(r#"src\SamplePanelIn.csv"#);
+    path.push("src");
+    let can_path = path.join("SamplePanelCan.csv");
+    let interviewer_path = path.join(r#"SamplePanelIn.csv"#);
     println!("Running in test mode {}", path.display());
     if pos == CANDIDATE_ARG {
         return Ok(can_path.into_os_string());
     }
-    Ok(path.into_os_string())
+    Ok(interviewer_path.into_os_string())
 }
 
 #[cfg(not(test))]
