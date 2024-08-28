@@ -13,7 +13,8 @@ const INTERVIEWER_ARG : usize = 2;
 /// positional arguments, then this returns an error.
 #[cfg(test)]
 fn get_arg(pos: usize) -> Result<OsString, Box<dyn Error>> {
-    println!("Running in test mode");
+    let path = env::current_dir()?;
+    println!("Running in test mode {}", path.display());
     if pos == CANDIDATE_ARG {
         return Ok(OsString::from(r#".\SamplePanelCan.csv"#))
     }
