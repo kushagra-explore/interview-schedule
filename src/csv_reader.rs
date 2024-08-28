@@ -15,9 +15,9 @@ const INTERVIEWER_ARG : usize = 2;
 fn get_arg(pos: usize) -> Result<OsString, Box<dyn Error>> {
     println!("Running in test mode");
     if pos == CANDIDATE_ARG {
-        return Ok(OsString::from(r#"C:\Users\kvarshney\repos\scheduling_interview\src\SamplePanelCan.csv"#))
+        return Ok(OsString::from(r#".\SamplePanelCan.csv"#))
     }
-    Ok(OsString::from(r#"C:\Users\kvarshney\repos\scheduling_interview\src\SamplePanelIn.csv"#))
+    Ok(OsString::from(r#".\SamplePanelIn.csv"#))
 }
 
 #[cfg(not(test))]
