@@ -76,6 +76,9 @@ pub fn get_csv_data_interview(interview_logistics: &mut InterviewLogistics) -> R
         };
 
         match eligible_rounds {
+            Some(InterviewRound::R3) => {
+                println!("Not considering R3 interviewer {} for R1 and R2 allocation", name);
+            }
             Some(eligible_r) => {
                 interview_logistics.add_interviewer(Interviewer::new(name, experience, slot, eligible_r))
             },
@@ -93,7 +96,7 @@ fn convert_to_exp(exp: &str) -> Result<Experience, Box<dyn Error>> {
     match exp {
         "SE1" | "SE" => Ok(Experience::SE1),
         "SE2" => Ok(Experience::SE2),
-        "Senior" | "SSE" => Ok(Experience::Senior),
+        "Senior" | "SSE" | "PSEM" | "PSE" | "PGSEM" | "SSEM" => Ok(Experience::Senior),
         _ => Err(Box::new(io::Error::new(io::ErrorKind::InvalidData, "Invalid Experience")))
     }
 }

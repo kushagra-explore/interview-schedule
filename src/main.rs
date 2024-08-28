@@ -343,12 +343,21 @@ fn main() {
                         candidate.availability[slot as usize + 1] = false;
                     }
 
+                    if slot > 1{
+                        interviewer.availability[slot as usize - 1] = false;
+                        candidate.availability[slot as usize - 1] = false;
+                    }
                     //Want to give interviewer and candidates some buffer time between interviews
                     if slot < 11 {
                         interviewer.availability[slot as usize + 2] = false;
                         candidate.availability[slot as usize + 2] = false;
                     } 
                     
+                    if slot > 2{
+                        interviewer.availability[slot as usize - 2] = false;
+                        candidate.availability[slot as usize - 2] = false;
+                    }
+
                     interview_logistics.interviewer_candidate_map.entry(interviewer.name.clone())
                     .or_insert(HashSet::new()).insert(candidate.name.clone());
                     interview_details.entry(candidate.serial_num).or_insert(CandidateInterviewDetails{candidate: candidate.clone(), 
@@ -400,6 +409,9 @@ fn can_interview(candidate: &Candidate, interviewer: &Interviewer) -> Option<i8>
     }
     if interviewer.interviews_count == 0 {
         return Some(-1);
+    }
+    if (interviewer.eligible_rounds as usize) < candidate.schedule.len() {
+        return Some(-2);
     }
     let slot = match_slot(&candidate.availability, &interviewer.availability);
     if slot < 1 {
