@@ -74,7 +74,7 @@ If someone is avaialable for full day provide *"all"* as in the slot available c
 | I3          | C8        | 6    | 11:30               |
 | I1          | C9        | 2    | 09:30               |
 
-#### Identified Bugs
+#### New feature asks and Bugs
 1. ~~Return round name in the result~~ -- fixed
 2. ~~Slot mark as true, once assigned so that same slot doesnt come~~ -- fixed
 3. ~~Fix time formatting in output (Current: 9:0, should be 09:00)~~ -- fixed
