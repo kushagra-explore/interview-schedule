@@ -327,11 +327,18 @@ fn main() {
                     println!("Retrying the allocation for candidate, But not the interviewer {:?}", interviewer);
                     continue
                 },
+                Some(-2) => {
+                    println!("{}",
+                        format!("---------Interviewer {} is not eligible for this round of interview for candidate {}", interviewer.name, candidate.name).red());
+                    interview_logistics.add_interviewer(interviewer);
+                    continue
+                },
                 Some(0) => {
                     interview_logistics.add_interviewer(interviewer);
                     break
                 },
                 Some(slot) => {
+                    println!("Slot {}, Interviewer {} and Candidate {} ", slot, interviewer.name, candidate.name);
                     is_allocated = true;
                     candidate.schedule.push(slot as u8);
                     interviewer.schedule.push(slot as u8);
